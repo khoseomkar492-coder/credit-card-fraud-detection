@@ -269,6 +269,13 @@ function App() {
                   Model classification:{" "}
                   <strong>Class {result.prediction}</strong>
                 </p>
+                <p>Fraud probability: {result.probability}%</p>
+                <div className="probability-bar">
+                  <div
+                    className="probability-fill"
+                    style={{ width: `${result.probability}%` }}
+                  ></div>
+                </div>
               </div>
             )}
 

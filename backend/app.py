@@ -66,6 +66,7 @@ def predict():
 
     # Make prediction
     prediction = model.predict(features)[0]
+    probability = model.predict_proba(features)[0][1]
 
     if prediction == 1:
         result = "Fraudulent Transaction"
@@ -80,9 +81,10 @@ def predict():
     transactions_collection.insert_one(transaction)
 
     return jsonify({
-        "prediction": int(prediction),
-        "result": result
-    })
+    "prediction": int(prediction),
+    "result": result,
+    "probability": round(float(probability) * 100, 2)
+})
 
 
 @app.route("/api/transactions", methods=["GET"])
