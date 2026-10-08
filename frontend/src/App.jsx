@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 const featureNames = Array.from({ length: 28 }, (_, i) => `V${i + 1}`);
@@ -14,6 +14,14 @@ function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/transactions")
+      .then((response) => response.json())
+      .then((data) => setHistory(data))
+      .catch(() => setHistory([]));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,39 +38,39 @@ function App() {
         ...Object.fromEntries(featureNames.map((name) => [name, 0])),
       });
     } else {
-  setForm({
-    Time: 406,
-    V1: -2.3122265423263,
-    V2: 1.95199201064158,
-    V3: -1.60985073229769,
-    V4: 3.9979055875468,
-    V5: -0.522187864667764,
-    V6: -1.42654531920595,
-    V7: -2.53738730624579,
-    V8: 1.39165724829804,
-    V9: -2.77008927719433,
-    V10: -2.77227214465915,
-    V11: 3.20203320709635,
-    V12: -2.89990738849473,
-    V13: -0.595221881324605,
-    V14: -4.28925378244217,
-    V15: 0.389724120274487,
-    V16: -1.14074717980657,
-    V17: -2.83005567450437,
-    V18: -0.0168224681808257,
-    V19: 0.416955705037907,
-    V20: 0.126910559061474,
-    V21: 0.517232370861764,
-    V22: -0.0350493686052974,
-    V23: -0.465211076182388,
-    V24: 0.320198198514526,
-    V25: 0.0445191674731724,
-    V26: 0.177839798284401,
-    V27: 0.261145002567677,
-    V28: -0.143275874698919,
-    Amount: 0.0,
-  });
-}
+      setForm({
+        Time: 406,
+        V1: -2.3122265423263,
+        V2: 1.95199201064158,
+        V3: -1.60985073229769,
+        V4: 3.9979055875468,
+        V5: -0.522187864667764,
+        V6: -1.42654531920595,
+        V7: -2.53738730624579,
+        V8: 1.39165724829804,
+        V9: -2.77008927719433,
+        V10: -2.77227214465915,
+        V11: 3.20203320709635,
+        V12: -2.89990738849473,
+        V13: -0.595221881324605,
+        V14: -4.28925378244217,
+        V15: 0.389724120274487,
+        V16: -1.14074717980657,
+        V17: -2.83005567450437,
+        V18: -0.0168224681808257,
+        V19: 0.416955705037907,
+        V20: 0.126910559061474,
+        V21: 0.517232370861764,
+        V22: -0.0350493686052974,
+        V23: -0.465211076182388,
+        V24: 0.320198198514526,
+        V25: 0.0445191674731724,
+        V26: 0.177839798284401,
+        V27: 0.261145002567677,
+        V28: -0.143275874698919,
+        Amount: 0.0,
+      });
+    }
     setResult(null);
     setError("");
   };
@@ -74,7 +82,7 @@ function App() {
     setResult(null);
 
     const payload = Object.fromEntries(
-      Object.entries(form).map(([key, value]) => [key, Number(value)])
+      Object.entries(form).map(([key, value]) => [key, Number(value)]),
     );
 
     try {
@@ -90,9 +98,15 @@ function App() {
 
       const data = await response.json();
       setResult(data);
+
+      const historyResponse = await fetch(
+        "http://127.0.0.1:5000/api/transactions",
+      );
+      const historyData = await historyResponse.json();
+      setHistory(historyData);
     } catch (err) {
       setError(
-        "Unable to connect to the Flask API. Make sure the backend is running on port 5000."
+        "Unable to connect to the Flask API. Make sure the backend is running on port 5000.",
       );
     } finally {
       setLoading(false);
@@ -123,7 +137,9 @@ function App() {
         <section className="hero">
           <div>
             <p className="eyebrow">REAL-TIME TRANSACTION ANALYSIS</p>
-            <h1>Detect suspicious transactions before they become a problem.</h1>
+            <h1>
+              Detect suspicious transactions before they become a problem.
+            </h1>
             <p className="hero-copy">
               Submit transaction features to your trained Random Forest model
               and receive an instant fraud-risk classification.
@@ -229,7 +245,9 @@ function App() {
                 <p className="section-kicker">ANALYSIS RESULT</p>
                 <h2>Transaction status</h2>
               </div>
-              <div className="result-icon">{result ? (isFraud ? "!" : "✓") : "?"}</div>
+              <div className="result-icon">
+                {result ? (isFraud ? "!" : "✓") : "?"}
+              </div>
             </div>
 
             {!result ? (
@@ -237,16 +255,19 @@ function App() {
                 <div className="scan-ring">⌁</div>
                 <h3>Waiting for analysis</h3>
                 <p>
-                  Enter the transaction details and click Analyze transaction
-                  to run the Random Forest model.
+                  Enter the transaction details and click Analyze transaction to
+                  run the Random Forest model.
                 </p>
               </div>
             ) : (
               <div className={`result-content ${isFraud ? "fraud" : "safe"}`}>
-                <div className="result-label">{isFraud ? "HIGH RISK" : "LOW RISK"}</div>
+                <div className="result-label">
+                  {isFraud ? "HIGH RISK" : "LOW RISK"}
+                </div>
                 <h3>{result.result}</h3>
                 <p>
-                  Model classification: <strong>Class {result.prediction}</strong>
+                  Model classification:{" "}
+                  <strong>Class {result.prediction}</strong>
                 </p>
               </div>
             )}
@@ -266,6 +287,51 @@ function App() {
               </div>
             </div>
           </aside>
+        </section>
+
+        <section className="history-section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">TRANSACTION LOG</span>
+              <h2>Prediction History</h2>
+              <p>Latest transactions analyzed by the fraud detection system.</p>
+            </div>
+            <span className="history-count">{history.length} records</span>
+          </div>
+
+          <div className="history-table">
+            <div className="history-row history-header">
+              <span>Time</span>
+              <span>Amount</span>
+              <span>Prediction</span>
+              <span>Result</span>
+            </div>
+
+            {history.length === 0 ? (
+              <div className="history-empty">
+                No transaction history available.
+              </div>
+            ) : (
+              history.map((transaction, index) => (
+                <div className="history-row" key={index}>
+                  <span>{transaction.Time}</span>
+                  <span>${Number(transaction.Amount).toFixed(2)}</span>
+                  <span>
+                    <strong
+                      className={
+                        transaction.prediction === 1
+                          ? "history-fraud"
+                          : "history-safe"
+                      }
+                    >
+                      Class {transaction.prediction}
+                    </strong>
+                  </span>
+                  <span>{transaction.result}</span>
+                </div>
+              ))
+            )}
+          </div>
         </section>
 
         <section className="info-strip">

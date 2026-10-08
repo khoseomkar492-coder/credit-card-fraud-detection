@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 import joblib
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -28,40 +29,42 @@ def home():
 def predict():
     data = request.json
 
-    # Convert input data into the format required by the model
-    features = [[
-        data["Time"],
-        data["V1"],
-        data["V2"],
-        data["V3"],
-        data["V4"],
-        data["V5"],
-        data["V6"],
-        data["V7"],
-        data["V8"],
-        data["V9"],
-        data["V10"],
-        data["V11"],
-        data["V12"],
-        data["V13"],
-        data["V14"],
-        data["V15"],
-        data["V16"],
-        data["V17"],
-        data["V18"],
-        data["V19"],
-        data["V20"],
-        data["V21"],
-        data["V22"],
-        data["V23"],
-        data["V24"],
-        data["V25"],
-        data["V26"],
-        data["V27"],
-        data["V28"],
-        data["Amount"]
-    ]]
+    # Create DataFrame with the same feature names
+    # used while training the Random Forest model
+    features = pd.DataFrame([{
+        "Time": data["Time"],
+        "V1": data["V1"],
+        "V2": data["V2"],
+        "V3": data["V3"],
+        "V4": data["V4"],
+        "V5": data["V5"],
+        "V6": data["V6"],
+        "V7": data["V7"],
+        "V8": data["V8"],
+        "V9": data["V9"],
+        "V10": data["V10"],
+        "V11": data["V11"],
+        "V12": data["V12"],
+        "V13": data["V13"],
+        "V14": data["V14"],
+        "V15": data["V15"],
+        "V16": data["V16"],
+        "V17": data["V17"],
+        "V18": data["V18"],
+        "V19": data["V19"],
+        "V20": data["V20"],
+        "V21": data["V21"],
+        "V22": data["V22"],
+        "V23": data["V23"],
+        "V24": data["V24"],
+        "V25": data["V25"],
+        "V26": data["V26"],
+        "V27": data["V27"],
+        "V28": data["V28"],
+        "Amount": data["Amount"]
+    }])
 
+    # Make prediction
     prediction = model.predict(features)[0]
 
     if prediction == 1:
@@ -80,6 +83,18 @@ def predict():
         "prediction": int(prediction),
         "result": result
     })
+
+
+@app.route("/api/transactions", methods=["GET"])
+def get_transactions():
+    transactions = list(
+        transactions_collection.find(
+            {},
+            {"_id": 0}
+        ).sort("_id", -1).limit(20)
+    )
+
+    return jsonify(transactions)
 
 
 if __name__ == "__main__":
