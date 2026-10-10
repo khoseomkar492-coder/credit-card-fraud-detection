@@ -18,6 +18,7 @@ env/
 
 # Dataset
 data/*.csv
+!data/creditcard.zip
 
 # Node
 node_modules/

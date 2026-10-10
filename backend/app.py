@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 import joblib
 import pandas as pd
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +18,10 @@ db = client["fraud_detection"]
 transactions_collection = db["transactions"]
 
 # Load trained Random Forest model
-model = joblib.load("../ml/random_forest_model.joblib")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "ml", "random_forest_model.joblib")
+
+model = joblib.load(MODEL_PATH)
 
 
 @app.route("/")

@@ -1,4 +1,12 @@
 import { useEffect, useState } from "react";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+} from "recharts";
 import "./App.css";
 
 const featureNames = Array.from({ length: 28 }, (_, i) => `V${i + 1}`);
@@ -15,6 +23,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
+  const clearHistory = () => {
+    setHistory([]);
+  };
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/transactions")
@@ -114,6 +125,46 @@ function App() {
   };
 
   const isFraud = result?.prediction === 1;
+  const totalTransactions = history.length;
+
+  const fraudDetectionRate =
+    totalTransactions === 0
+      ? 0
+      : (
+          (history.filter((transaction) => transaction.prediction === 1)
+            .length /
+            totalTransactions) *
+          100
+        ).toFixed(2);
+
+  const chartData = [
+    {
+      name: "Legitimate",
+      value: history.filter((transaction) => transaction.prediction === 0)
+        .length,
+    },
+    {
+      name: "Fraudulent",
+      value: history.filter((transaction) => transaction.prediction === 1)
+        .length,
+    },
+  ];
+
+  const chartColors = ["#27d49b", "#ff6b6b"];
+
+  const fraudTransactions = history.filter(
+    (transaction) => transaction.prediction === 1,
+  ).length;
+
+  const averageFraudProbability =
+    totalTransactions > 0
+      ? (
+          history.reduce(
+            (sum, transaction) => sum + Number(transaction.probability ?? 0),
+            0,
+          ) / totalTransactions
+        ).toFixed(2)
+      : "0.00";
 
   return (
     <div className="app-shell">
@@ -303,6 +354,79 @@ function App() {
           </aside>
         </section>
 
+        <section className="stats-grid">
+          <div className="card stat-card">
+            <p>Total Transactions</p>
+            <h2>{totalTransactions}</h2>
+            <span>Latest records analyzed</span>
+          </div>
+
+          <div className="card stat-card">
+            <p>Fraud Detected</p>
+            <h2>{fraudTransactions}</h2>
+            <span>Classified as fraudulent</span>
+          </div>
+
+          <div className="card stat-card">
+            <p>Average Fraud Probability</p>
+            <h2>{averageFraudProbability}%</h2>
+            <span>Across loaded history</span>
+          </div>
+
+          <div className="stat-card">
+            <span className="stat-label">Fraud Detection Rate</span>
+            <h3>{fraudDetectionRate}%</h3>
+            <p>Transactions flagged as fraudulent</p>
+          </div>
+        </section>
+
+        <section className="analytics-card card">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">MODEL ANALYTICS</span>
+              <h2>Transaction Overview</h2>
+              <p>Legitimate and fraudulent predictions in recent history.</p>
+            </div>
+          </div>
+
+          {totalTransactions === 0 ? (
+            <div className="history-empty">
+              Analyze a transaction to see the chart.
+            </div>
+          ) : (
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={95}
+                    paddingAngle={3}
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={entry.name} fill={chartColors[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#171a2b",
+                      border: "1px solid #292d43",
+                      borderRadius: "10px",
+                      color: "#f5f6ff",
+                    }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </section>
+
         <section className="history-section">
           <div className="section-heading">
             <div>
@@ -310,9 +434,18 @@ function App() {
               <h2>Prediction History</h2>
               <p>Latest transactions analyzed by the fraud detection system.</p>
             </div>
-            <span className="history-count">{history.length} records</span>
+            <div className="history-actions">
+              <span className="history-count">{history.length} records</span>
+
+              <button
+                className="clear-history-btn"
+                onClick={clearHistory}
+                disabled={history.length === 0}
+              >
+                Clear History
+              </button>
+            </div>
           </div>
-        
           <div className="history-table">
             <div className="history-row history-header">
               <span>Time</span>
@@ -367,27 +500,34 @@ function App() {
               ))
             )}
           </div>
-          ```
         </section>
 
         <section className="info-strip">
-          <div>
-            <span className="info-icon">i</span>
+          <div className="project-info">
+            <span className="info-icon">✦</span>
             <div>
-              <strong>About this project</strong>
+              <strong>About FraudShield</strong>
               <p>
-                This application uses supervised machine learning to classify
-                credit-card transactions as legitimate or fraudulent.
+                An ML-powered system that analyzes transaction patterns to
+                identify potentially fraudulent credit-card activity.
               </p>
             </div>
           </div>
+
           <div className="metric">
-            <strong>0.95</strong>
-            <span>Fraud precision</span>
+            <span className="metric-label">Fraud Precision</span>
+            <strong>95%</strong>
+            <span className="metric-description">
+              Fraud alerts that were correct
+            </span>
           </div>
+
           <div className="metric">
-            <strong>0.73</strong>
-            <span>Fraud recall</span>
+            <span className="metric-label">Fraud Recall</span>
+            <strong>73%</strong>
+            <span className="metric-description">
+              Fraud cases detected in testing
+            </span>
           </div>
         </section>
       </main>
