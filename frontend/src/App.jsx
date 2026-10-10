@@ -312,13 +312,15 @@ function App() {
             </div>
             <span className="history-count">{history.length} records</span>
           </div>
-
+        
           <div className="history-table">
             <div className="history-row history-header">
               <span>Time</span>
               <span>Amount</span>
               <span>Prediction</span>
               <span>Result</span>
+              <span>Fraud Probability</span>
+              <span>Risk Level</span>
             </div>
 
             {history.length === 0 ? (
@@ -330,6 +332,7 @@ function App() {
                 <div className="history-row" key={index}>
                   <span>{transaction.Time}</span>
                   <span>${Number(transaction.Amount).toFixed(2)}</span>
+
                   <span>
                     <strong
                       className={
@@ -341,11 +344,30 @@ function App() {
                       Class {transaction.prediction}
                     </strong>
                   </span>
-                  <span>{transaction.result}</span>
+
+                  <span>{transaction.result || "N/A"}</span>
+                  <span>
+                    {transaction.probability != null
+                      ? `${transaction.probability}%`
+                      : "N/A"}
+                  </span>
+
+                  <span
+                    className={
+                      transaction.risk_level === "HIGH"
+                        ? "history-fraud"
+                        : transaction.risk_level === "MEDIUM"
+                          ? "history-medium"
+                          : "history-safe"
+                    }
+                  >
+                    {transaction.risk_level || "N/A"}
+                  </span>
                 </div>
               ))
             )}
           </div>
+          ```
         </section>
 
         <section className="info-strip">

@@ -84,6 +84,8 @@ def predict():
     transaction = data.copy()
     transaction["prediction"] = int(prediction)
     transaction["result"] = result
+    transaction["probability"] = round(float(probability) * 100, 2)
+    transaction["risk_level"] = risk_level
 
     transactions_collection.insert_one(transaction)
 
