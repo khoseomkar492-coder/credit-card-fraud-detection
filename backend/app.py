@@ -68,6 +68,13 @@ def predict():
     prediction = model.predict(features)[0]
     probability = model.predict_proba(features)[0][1]
 
+    if probability >= 0.7:
+        risk_level = "HIGH"
+    elif probability >= 0.3:
+        risk_level = "MEDIUM"
+    else:
+        risk_level = "LOW"
+
     if prediction == 1:
         result = "Fraudulent Transaction"
     else:
@@ -83,7 +90,8 @@ def predict():
     return jsonify({
     "prediction": int(prediction),
     "result": result,
-    "probability": round(float(probability) * 100, 2)
+    "probability": round(float(probability) * 100, 2),
+    "risk_level": risk_level
 })
 
 

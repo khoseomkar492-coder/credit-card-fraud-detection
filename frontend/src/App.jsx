@@ -260,16 +260,23 @@ function App() {
                 </p>
               </div>
             ) : (
-              <div className={`result-content ${isFraud ? "fraud" : "safe"}`}>
-                <div className="result-label">
-                  {isFraud ? "HIGH RISK" : "LOW RISK"}
-                </div>
+              <div
+                className={`result-content ${
+                  result.risk_level === "HIGH"
+                    ? "fraud"
+                    : result.risk_level === "MEDIUM"
+                      ? "medium"
+                      : "safe"
+                }`}
+              >
+                <div className="result-label">{result.risk_level} RISK</div>
                 <h3>{result.result}</h3>
                 <p>
                   Model classification:{" "}
                   <strong>Class {result.prediction}</strong>
                 </p>
                 <p>Fraud probability: {result.probability}%</p>
+                <p>Risk level: {result.risk_level}</p>
                 <div className="probability-bar">
                   <div
                     className="probability-fill"

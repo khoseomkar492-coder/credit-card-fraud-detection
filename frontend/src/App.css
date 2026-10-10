@@ -458,6 +458,14 @@ input:focus {
   background: rgba(255, 76, 76, 0.09);
 }
 
+.result-content.medium {
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
+.result-content.medium .result-label {
+  color: #ffc107;
+}
+
 .result-content.fraud h3 {
   color: #ffe1e1;
 }
