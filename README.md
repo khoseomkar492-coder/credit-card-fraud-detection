@@ -4,27 +4,29 @@ FraudShield is a machine learning project that detects potentially fraudulent cr
 
 Features
 
-Credit card fraud prediction
+1.Credit card fraud prediction
 
-Fraud probability and risk-level display
+2.Fraud probability and risk-level display
 
-Transaction history stored in MongoDB
+3.Transaction history stored in MongoDB
 
-Interactive dashboard and analytics
+4.Interactive dashboard and analytics
 
-Model training on a new computer
+5.Model training on a new computer
 
 Technology Stack
 
-Frontend: React, Vite, Recharts
+1.Frontend: React, Vite, Recharts
 
-Backend: Python, Flask, Flask-CORS
+2.Backend: Python, Flask, Flask-CORS
 
-Machine Learning: Pandas, Scikit-learn, Joblib
+3.Machine Learning: Pandas, Scikit-learn, Joblib
 
-Database: MongoDB
+4.Database: MongoDB
 
 Model: Random Forest Classifier
+
+// How to Run //
 
 Requirements
 
@@ -47,7 +49,8 @@ npm --version
 
 1. Clone the Repository
 
-git clone https://github.com/khoseomkar492-coder/credit-card-fraud-detection.git
+git clone https://github.com/khoseomkar492-coder/credit-card-fraud-detection.git  // link to clone
+
 cd credit-card-fraud-detection
 
 2. Extract the Dataset
