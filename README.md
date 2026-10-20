@@ -100,7 +100,7 @@ ml/random_forest_model.joblib
 
 Training may take some time depending on your computer.
 
-The trained model is not included in the repository; each user generates their own model by running this command.
+The trained Random Forest model is included in the repository at `ml/random_forest_model.joblib`, so you can run the application without training the model again. If you want to retrain it, run `python ml/preprocess.py` followed by `python ml/train_model.py` from the project root after extracting the dataset.
 
 6. Set Up MongoDB
 
@@ -173,7 +173,7 @@ Dataset not found: Confirm that data/creditcard.csv exists after extracting the 
 
 Cleaned dataset missing: Run python ml/preprocess.py from the project root.
 
-Model file missing: Run python ml/train_model.py from the project root.
+Model file missing: Extract the dataset, activate the root .venv, install the ML dependencies, and run python ml/preprocess.py followed by python ml/train_model.py from the project root.
 
 MongoDB connection error: Ensure MongoDB Community Server is installed and running.
 
